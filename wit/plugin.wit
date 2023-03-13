@@ -1,0 +1,11 @@
+default world sample-plugin {
+    record plugin-config {
+        name: string,
+        version: string,
+    }
+    record response {
+        content: string,
+    }
+    import get-config: func() -> plugin-config
+    export set-response: func(plugin-config: plugin-config, user: string) -> response
+}
