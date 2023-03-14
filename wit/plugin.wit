@@ -7,5 +7,5 @@ default world sample-plugin {
         content: string,
     }
     import get-config: func() -> plugin-config
-    export set-response: func(plugin-config: plugin-config, user: string) -> response
+    export gen-response: func(user: string) -> response
 }

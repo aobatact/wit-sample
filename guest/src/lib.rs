@@ -1,12 +1,14 @@
-
 wit_bindgen::generate!("plugin");
 
 pub struct Responder;
 
 impl SamplePlugin for Responder {
-    fn set_response(plugin_config: PluginConfig, user: wit_bindgen::rt::string::String) -> Response {
-        todo!()
+    fn gen_response(user: wit_bindgen::rt::string::String) -> Response {
+        Response {
+            content: get_config().name + &user,
+        }
     }
 }
 
-// export_host!(Responder);
+export_sample_plugin!(Responder);
+//a

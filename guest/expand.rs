@@ -88,57 +88,31 @@ pub fn get_config() -> PluginConfig {
     }
 }
 pub trait SamplePlugin {
-    fn set_response(plugin_config: PluginConfig, user: wit_bindgen::rt::string::String)
-        -> Response;
+    fn gen_response(user: wit_bindgen::rt::string::String) -> Response;
 }
 #[doc(hidden)]
-pub unsafe fn call_set_response<T: SamplePlugin>(
-    arg0: i32,
-    arg1: i32,
-    arg2: i32,
-    arg3: i32,
-    arg4: i32,
-    arg5: i32,
-) -> i32 {
+pub unsafe fn call_gen_response<T: SamplePlugin>(arg0: i32, arg1: i32) -> i32 {
     #[allow(unused_imports)]
     use wit_bindgen::rt::{alloc, vec::Vec, string::String};
     let len0 = arg1 as usize;
-    let len1 = arg3 as usize;
-    let len2 = arg5 as usize;
-    let result3 = T::set_response(
-        PluginConfig {
-            name: {
-                #[cfg(debug_assertions)]
-                {
-                    String::from_utf8(Vec::from_raw_parts(arg0 as *mut _, len0, len0)).unwrap()
-                }
-            },
-            version: {
-                #[cfg(debug_assertions)]
-                {
-                    String::from_utf8(Vec::from_raw_parts(arg2 as *mut _, len1, len1)).unwrap()
-                }
-            },
-        },
+    let result1 = T::gen_response({
+        #[cfg(debug_assertions)]
         {
-            #[cfg(debug_assertions)]
-            {
-                String::from_utf8(Vec::from_raw_parts(arg4 as *mut _, len2, len2)).unwrap()
-            }
-        },
-    );
-    let ptr4 = _RET_AREA.0.as_mut_ptr() as i32;
-    let Response { content: content5 } = result3;
-    let vec6 = (content5.into_bytes()).into_boxed_slice();
-    let ptr6 = vec6.as_ptr() as i32;
-    let len6 = vec6.len() as i32;
-    core::mem::forget(vec6);
-    *((ptr4 + 4) as *mut i32) = len6;
-    *((ptr4 + 0) as *mut i32) = ptr6;
-    ptr4
+            String::from_utf8(Vec::from_raw_parts(arg0 as *mut _, len0, len0)).unwrap()
+        }
+    });
+    let ptr2 = _RET_AREA.0.as_mut_ptr() as i32;
+    let Response { content: content3 } = result1;
+    let vec4 = (content3.into_bytes()).into_boxed_slice();
+    let ptr4 = vec4.as_ptr() as i32;
+    let len4 = vec4.len() as i32;
+    core::mem::forget(vec4);
+    *((ptr2 + 4) as *mut i32) = len4;
+    *((ptr2 + 0) as *mut i32) = ptr4;
+    ptr2
 }
 #[doc(hidden)]
-pub unsafe fn post_return_set_response<T: SamplePlugin>(arg0: i32) {
+pub unsafe fn post_return_gen_response<T: SamplePlugin>(arg0: i32) {
     wit_bindgen::rt::dealloc(
         *((arg0 + 0) as *const i32),
         (*((arg0 + 4) as *const i32)) as usize,
@@ -150,13 +124,26 @@ use wit_bindgen::rt::{alloc, vec::Vec, string::String};
 #[repr(align(4))]
 struct _RetArea([u8; 8]);
 static mut _RET_AREA: _RetArea = _RetArea([0; 8]);
-const _ : & str = "default world sample-plugin {\n    record plugin-config {\n        name: string,\n        version: string,\n    }\n    record response {\n        content: string,\n    }\n    import get-config: func() -> plugin-config\n    export set-response: func(plugin-config: plugin-config, user: string) -> response\n}" ;
+const _ : & str = "default world sample-plugin {\n    record plugin-config {\n        name: string,\n        version: string,\n    }\n    record response {\n        content: string,\n    }\n    import get-config: func() -> plugin-config\n    export gen-response: func(user: string) -> response\n}" ;
 pub struct Responder;
 impl SamplePlugin for Responder {
-    fn set_response(
-        plugin_config: PluginConfig,
-        user: wit_bindgen::rt::string::String,
-    ) -> Response {
-        ::core::panicking::panic("not yet implemented")
+    fn gen_response(user: wit_bindgen::rt::string::String) -> Response {
+        Response {
+            content: get_config().name + &user,
+        }
     }
 }
+const _: () = {
+    #[doc(hidden)]
+    #[export_name = "gen-response"]
+    #[allow(non_snake_case)]
+    unsafe extern "C" fn __export_sample_plugin_gen_response(arg0: i32, arg1: i32) -> i32 {
+        call_gen_response::<Responder>(arg0, arg1)
+    }
+    #[doc(hidden)]
+    #[export_name = "cabi_post_gen-response"]
+    #[allow(non_snake_case)]
+    unsafe extern "C" fn __post_return_sample_plugin_gen_response(arg0: i32) {
+        post_return_gen_response::<Responder>(arg0)
+    }
+};
